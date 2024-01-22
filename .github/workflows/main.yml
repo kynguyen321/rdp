@@ -25,6 +25,6 @@ jobs:
       run: |
         while ($true) {
           Start-Process -NoNewWindow -FilePath .\ngrok\ngrok.exe -ArgumentList "tcp", "3389"
-          Start-Sleep -Seconds 600  # Sleep for 10 minutes before restarting the tunnel
+          Start-Sleep -Seconds 18000  # Sleep for 10 minutes before restarting the tunnel
         }
 
