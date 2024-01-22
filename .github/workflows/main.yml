@@ -5,7 +5,7 @@ on: [push, workflow_dispatch]
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: fv-az980-863
 
     steps:
     - name: Download
