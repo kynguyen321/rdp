@@ -22,4 +22,9 @@ jobs:
     - run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
     - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
     - name: Create Tunnel
-      run: .\ngrok\ngrok.exe tcp 3389 --remote-addr 127.0.0.1:3389 --keepalive 10
+      run: |
+        while ($true) {
+          Start-Process -NoNewWindow -FilePath .\ngrok\ngrok.exe -ArgumentList "tcp", "3389", "--remote-addr", "127.0.0.1:3389"
+          Start-Sleep -Seconds 600  # Sleep for 10 minutes before restarting the tunnel
+        }
+
