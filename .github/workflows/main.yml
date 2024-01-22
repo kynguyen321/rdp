@@ -24,7 +24,7 @@ jobs:
     - name: Create Tunnel
       run: |
         while ($true) {
-          Start-Process -NoNewWindow -FilePath .\ngrok\ngrok.exe -ArgumentList "tcp", "3389", "--remote-addr", "127.0.0.1:3389"
+          Start-Process .\ngrok\ngrok.exe tcp 3389
           Start-Sleep -Seconds 600  # Sleep for 10 minutes before restarting the tunnel
         }
 
