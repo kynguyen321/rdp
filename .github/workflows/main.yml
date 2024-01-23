@@ -3,43 +3,23 @@ name: CI
 on: [push, workflow_dispatch]
 
 jobs:
-  download:
+  build:
+
     runs-on: windows-latest
-    timeout-minutes: 10 # Tăng thời gian tối đa để đảm bảo các bước còn lại có đủ thời gian
+    timeout-minutes: 300
     steps:
     - name: Download
       run: Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
-
-  extract:
-    needs: download
-    runs-on: windows-latest
-    timeout-minutes: 10
-    steps:
     - name: Extract
       run: Expand-Archive ngrok.zip
-
-  auth:
-    needs: extract
-    runs-on: windows-latest
-    timeout-minutes: 10
-    steps:
     - name: Auth
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-
-  enable_TS:
-    needs: auth
-    runs-on: windows-latest
-    timeout-minutes: 10
-    steps:
     - name: Enable TS
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
-
-  create_tunnel:
-    needs: enable_TS
-    runs-on: windows-latest
-    timeout-minutes: 300 # Thời gian chạy tối đa 6 giờ
-    steps:
+    - run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+    - run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
+    - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
     - name: Create Tunnel
       run: .\ngrok\ngrok.exe tcp 3389
