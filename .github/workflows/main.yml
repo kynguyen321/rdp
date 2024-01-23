@@ -5,6 +5,7 @@ on: [push, workflow_dispatch]
 jobs:
   download:
     runs-on: windows-latest
+    timeout-minutes: 10  # Thay đổi giới hạn thời gian tại đây nếu cần
     steps:
     - name: Download
       run: Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
@@ -12,6 +13,7 @@ jobs:
   extract:
     needs: download
     runs-on: windows-latest
+    timeout-minutes: 10  # Thay đổi giới hạn thời gian tại đây nếu cần
     steps:
     - name: Extract
       run: Expand-Archive ngrok.zip
@@ -19,6 +21,7 @@ jobs:
   auth:
     needs: extract
     runs-on: windows-latest
+    timeout-minutes: 10  # Thay đổi giới hạn thời gian tại đây nếu cần
     steps:
     - name: Auth
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
@@ -28,6 +31,7 @@ jobs:
   enable_TS:
     needs: auth
     runs-on: windows-latest
+    timeout-minutes: 10  # Thay đổi giới hạn thời gian tại đây nếu cần
     steps:
     - name: Enable TS
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
@@ -35,6 +39,7 @@ jobs:
   create_tunnel:
     needs: enable_TS
     runs-on: windows-latest
+    timeout-minutes: 360  # Thay đổi giới hạn thời gian tại đây nếu cần
     steps:
     - name: Create Tunnel
       run: .\ngrok\ngrok.exe tcp 3389
