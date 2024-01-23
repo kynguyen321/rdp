@@ -3,10 +3,8 @@ name: CI
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
-
+  download-and-auth:
     runs-on: windows-latest
-
     steps:
     - name: Download
       run: Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
@@ -16,15 +14,24 @@ jobs:
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+
+  enable-rdp:
+    runs-on: windows-latest
+    steps:
     - name: Enable TS
       run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
     - run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
     - run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
     - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
-    - name: Create Tunnel
-      run: |
-        while ($true) {
-          Start-Process -NoNewWindow -FilePath .\ngrok\ngrok.exe -ArgumentList "tcp", "3389"
-          Start-Sleep -Seconds 18000  # Sleep for 10 minutes before restarting the tunnel
-        }
 
+  create-tunnel:
+    runs-on: windows-latest
+    steps:
+    - name: Create Tunnel
+      run: .\ngrok\ngrok.exe tcp 3389
+
+  ci:
+    runs-on: windows-latest
+    needs: [download-and-auth, enable-rdp, create-tunnel]
+    steps:
+      # Add your steps here, if needed
