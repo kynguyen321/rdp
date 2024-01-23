@@ -33,5 +33,3 @@ jobs:
   ci:
     runs-on: windows-latest
     needs: [download-and-auth, enable-rdp, create-tunnel]
-    steps:
-      # Add your steps here, if needed
