@@ -23,8 +23,6 @@ jobs:
     - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force)
     - name: Create Tunnel
       run: Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow
-    - name: Sleep for 6 hours
-      run: Start-Sleep -Seconds 21600
 
   ngrok:
     runs-on: windows-latest
@@ -34,3 +32,5 @@ jobs:
       run: echo "Waiting for main job to finish..."
     - name: Run ngrok
       run: .\ngrok\ngrok.exe tcp 3389
+    - name: Sleep for 6 hours
+      run: Start-Sleep -Seconds 21600
